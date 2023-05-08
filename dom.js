@@ -30,3 +30,19 @@ var li=document.getElementsByTagName('li');
 console.log(li);
 for(var i=0;i<li.length;i++)
 li[i].style.backgroundColor="#f4f4f4";
+
+//QUERYSELECTOR
+var secondItem=document.querySelector('.list-group-item:nth-child(2)');
+//secondItem.style.backgroundColor='green';
+var thirdItem=document.querySelector('.list-group-item:nth-child(3)');
+thirdItem.style.visibility='hidden';
+
+//QuerySelectorALL
+var secItem=document.querySelectorAll('li:nth-child(2)');
+secItem.style.color="green";
+
+var odd=document.querySelectorAll('li:nth-child(odd)');
+for(var i=0;i<odd.length;i++)
+{
+    odd[i].style.backgroundColor="green";
+}
