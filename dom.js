@@ -62,10 +62,27 @@ function filterItems(e){
   Array.from(items).forEach(function(items){
     var itemName = items.firstChild.textContent;
    var itemName1=items.secondChild.textContent;
-    if(itemName.toLowerCase().indexOf(text) != -1 || itemName1.toLowerCase().indexOf(text) != -1){
+    if(itemName.toLowerCase().indexOf(text) != -1 || itemName1.toLowerCase().indexOf(text) !=-1){
       items.style.display = 'block';
     } else {
       items.style.display = 'none';
     }
   });
+}
+//storing form data in localstorage
+window.onload = function() {
+// Check for LocalStorage support.
+  if (localStorage) {
+// Add an event listener for form submissions
+    document.getElementById('addForm').addEventListener('submit', function() {
+      // Get the value of the name field.
+      var item = document.getElementById('item').value;
+var item1 = document.getElementById('item1').value;
+      // Save the name in localStorage.
+      localStorage.setItem('item', item);
+       localStorage.setItem('item1', item1);
+    });
+
+  }
+
 }
