@@ -93,25 +93,77 @@ var itemList= document.querySelector('#items');
 
 //createElement
 //create a div
-var newDiv=document.createElement('div');
+// var newDiv=document.createElement('div');
 
-//add class
-newDiv.className='Hello';
+// //add class
+// newDiv.className='Hello';
 
-//add id
-newDiv.id='Hello1';
+// //add id
+// newDiv.id='Hello1';
 
-//add attr
-newDiv.setAttribute('title','Hello Div title');
+// //add attr
+// newDiv.setAttribute('title','Hello Div title');
 
-//create text node
-var newDivText=document.createTextNode('Hello World');
+// //create text node
+// var newDivText=document.createTextNode('Hello World');
 
-//add text to div
-newDiv.appendChild(newDivText);
-var container=document.querySelector('header.container');
-var h1=documemt.querySelector('header h1');
-console.log(newDiv);
-newDiv.style.fontsize='30px';
-container.insertBefore(newDiv,h1);
-console.log(newDiv);
+// //add text to div
+// newDiv.appendChild(newDivText);
+// var container=document.querySelector('header.container');
+// var h1=documemt.querySelector('header h1');
+// console.log(newDiv);
+// newDiv.style.fontsize='30px';
+// container.insertBefore(newDiv,h1);
+// console.log(newDiv);
+
+
+
+var form = document.getElementById('addForm');
+var itemList = document.getElementById('items');
+
+
+// Form submit event
+form.addEventListener('submit', addItem);
+// Delete event
+itemList.addEventListener('click', removeItem);
+
+
+// Add item
+function addItem(e){
+  e.preventDefault();
+
+  // Get input value
+  var newItem = document.getElementById('item').value;
+
+  // Create new li element
+  var li = document.createElement('li');
+  // Add class
+  li.className = 'list-group-item';
+  // Add text node with input value
+  li.appendChild(document.createTextNode(newItem));
+
+  // Create del button element
+  var deleteBtn = document.createElement('button');
+
+  // Add classes to del button
+  deleteBtn.className = 'btn btn-danger btn-sm float-right delete';
+
+  // Append text node
+  deleteBtn.appendChild(document.createTextNode('X'));
+
+  // Append button to li
+  li.appendChild(deleteBtn);
+
+  // Append li to list
+  itemList.appendChild(li);
+}
+
+// Remove item
+function removeItem(e){
+  if(e.target.classList.contains('delete')){
+    if(confirm('Are You Sure?')){
+      var li = e.target.parentElement;
+      itemList.removeChild(li);
+    }
+  }
+}
