@@ -70,19 +70,33 @@ function filterItems(e){
   });
 }
 //storing form data in localstorage
-window.onload = function() {
-// Check for LocalStorage support.
-  if (localStorage) {
-// Add an event listener for form submissions
-    document.getElementById('addForm').addEventListener('submit', function() {
-      // Get the value of the name field.
-      var item = document.getElementById('item').value;
-var item1 = document.getElementById('item1').value;
-      // Save the name in localStorage.
-      localStorage.setItem('item', item);
-       localStorage.setItem('item1', item1);
-    });
+// window.onload = function() {
+// // Check for LocalStorage support.
+//   if (localStorage) {
+// // Add an event listener for form submissions
+//     document.getElementById('addForm').addEventListener('submit', function() {
+//       // Get the value of the name field.
+//       var item = document.getElementById('item').value;
+// var item1 = document.getElementById('item1').value;
+//       // Save the name in localStorage.
+//       localStorage.setItem('item', item);
+//        localStorage.setItem('item1', item1);
+//     });
 
-  }
+//   }
 
-}
+// }
+
+
+//
+var item= document.getElementById('item').value; 
+var item1= document.getElementById('item1').value;
+let myObj={
+  //tried many workaround but didn't got the right one.
+name: item,
+name1: item1
+};
+let myObj_ser=JSON.stringify(myObj);
+localStorage.setItem("myObj",myObj_ser);
+let myObj_deser=JSON.parse(localStorage.getItem("myObj"));
+console.log(myObj_deser)
