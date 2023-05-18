@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Show and Delete Form Data</title>
+  <title>Show, Edit, and Delete Form Data</title>
 </head>
 <body>
   <form id="myForm">
@@ -31,7 +31,8 @@
           formDataDiv.innerHTML = `
             <p><strong>Name:</strong> ${formValues.name}</p>
             <p><strong>Email:</strong> ${formValues.email}</p>
-<p><strong>Phone:</strong> ${formValues.phone}</p>
+ <p><strong>Phone:</strong> ${formValues.phone}</p>
+            <button onclick="editFormData(${index})">Edit</button>
             <button onclick="deleteFormData(${index})">Delete</button>
             <hr>
           `;
@@ -48,7 +49,7 @@
 
       var name = document.getElementById('name').value;
       var email = document.getElementById('email').value;
- var phone = document.getElementById('phone').value;
+var phone = document.getElementById('phone').value;
       // Retrieve existing form data array from local storage
       var allFormData = localStorage.getItem('allFormData');
       var formValuesArray = allFormData ? JSON.parse(allFormData) : [];
@@ -69,7 +70,8 @@ phone: phone
       // Clear form input values
       document.getElementById('name').value = '';
       document.getElementById('email').value = '';
-document.getElementById('phone').value = '';
+ document.getElementById('phone').value = '';
+
       displayAllFormData();
     });
 
@@ -81,6 +83,27 @@ document.getElementById('phone').value = '';
         formValuesArray.splice(index, 1); // Remove the selected entry
 
         localStorage.setItem('allFormData', JSON.stringify(formValuesArray));
+        displayAllFormData();
+      }
+    }
+
+    // Edit form data: delete entry, populate form, and update displayed values
+    function editFormData(index) {
+      var allFormData = localStorage.getItem('allFormData');
+      if (allFormData) {
+        var formValuesArray = JSON.parse(allFormData);
+        var formValues = formValuesArray[index];
+
+        // Delete the selected entry
+        formValuesArray.splice(index, 1);
+
+        // Update local storage
+        localStorage.setItem('allFormData', JSON.stringify(formValuesArray));
+
+        // Populate form with the selected entry for editing
+        document.getElementById('name').value = formValues.name;
+        document.getElementById('email').value = formValues.email;
+document.getElementById('phone').value = formValues.phone;
         displayAllFormData();
       }
     }
