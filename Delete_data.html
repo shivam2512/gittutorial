@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Show and Delete Form Data</title>
+</head>
+<body>
+  <form id="myForm">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required><br><br>
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required><br><br>
+<label for="name">Phone:</label>
+    <input type="text" id="phone" name="phone" required><br><br>
+    <input type="submit" value="Submit">
+  </form>
+
+  <h2>Form Data:</h2>
+  <div id="formDataDisplay"></div>
+
+  <script>
+    // Retrieve and display all form data from local storage
+    function displayAllFormData() {
+      var allFormData = localStorage.getItem('allFormData');
+      if (allFormData) {
+        var formValuesArray = JSON.parse(allFormData);
+        var formDataDisplay = document.getElementById('formDataDisplay');
+        formDataDisplay.innerHTML = '';
+
+        formValuesArray.forEach(function(formValues, index) {
+          var formDataDiv = document.createElement('div');
+          formDataDiv.innerHTML = `
+            <p><strong>Name:</strong> ${formValues.name}</p>
+            <p><strong>Email:</strong> ${formValues.email}</p>
+<p><strong>Phone:</strong> ${formValues.phone}</p>
+            <button onclick="deleteFormData(${index})">Delete</button>
+            <hr>
+          `;
+          formDataDisplay.appendChild(formDataDiv);
+        });
+      }
+    }
+
+    displayAllFormData();
+
+    // Listen for form submission
+    document.getElementById('myForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      var name = document.getElementById('name').value;
+      var email = document.getElementById('email').value;
+ var phone = document.getElementById('phone').value;
+      // Retrieve existing form data array from local storage
+      var allFormData = localStorage.getItem('allFormData');
+      var formValuesArray = allFormData ? JSON.parse(allFormData) : [];
+
+      // Create a new form values object
+      var formValues = {
+        name: name,
+        email: email,
+phone: phone
+      };
+
+      // Add the new form values to the array
+      formValuesArray.push(formValues);
+
+      // Store the updated form data array in local storage
+      localStorage.setItem('allFormData', JSON.stringify(formValuesArray));
+
+      // Clear form input values
+      document.getElementById('name').value = '';
+      document.getElementById('email').value = '';
+document.getElementById('phone').value = '';
+      displayAllFormData();
+    });
+
+    // Delete form data from local storage and update displayed values
+    function deleteFormData(index) {
+      var allFormData = localStorage.getItem('allFormData');
+      if (allFormData) {
+        var formValuesArray = JSON.parse(allFormData);
+        formValuesArray.splice(index, 1); // Remove the selected entry
+
+        localStorage.setItem('allFormData', JSON.stringify(formValuesArray));
+        displayAllFormData();
+      }
+    }
+  </script>
+</body>
+</html>
