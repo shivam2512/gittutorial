@@ -1,33 +1,184 @@
-<header id="main-header" class="bg-success text-white p-4 mb-3">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-6">
-            <h1 id="header-title">Item Lister</h1>
-        </div>
-      </div>
-    </div>
-  </header>
-  <div class="container">
-   <div id="main" class="card card-body">
-    <h2 class="title">Add Items</h2>
-    <form id="addForm" class="form-inline mb-3">
-      <input type="text" class="form-control mr-2" id="item">
-      <input type="submit" class="btn btn-dark" value="Submit">
-    </form>
-    <h2 class="title">Items</h2>
-    <ul id="items" class="list-group">
-      <li class="list-group-item">Item 1 
-        <button class="btn btn-danger btn-sm float-right delete" margin-left="200px">X</button>
-        <button class="btn btn-primary btn-sm float-right edit">Edit</button>
-      </li>
-      <li class="list-group-item">Item 2 <button class="btn btn-danger btn-sm float-right delete" margin-left="200px">X</button>
-        <button class="btn btn-primary btn-sm float-right edit">Edit</button>
-      <li class="list-group-item">Item 3 
-        <button class="btn btn-danger btn-sm float-right delete" margin-left="200px">X</button>
-        <button class="btn btn-primary btn-sm float-right edit">Edit</button>
-      <li class="list-group-item">Item 4 
-      <button class="btn btn-danger btn-sm float-right delete" margin-left="200px">X</button>
-        <button class="btn btn-primary btn-sm float-right edit">Edit</button></li>
-    </ul>
-   </div>
-  </div>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Appointment Booking System</title>
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    .edit-btn, .delete-btn {
+      padding: 4px 8px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Appointment Booking System</h1>
+
+  <form id="appointmentForm">
+    <input type="text" id="nameInput" placeholder="Name" required>
+    <input type="email" id="emailInput" placeholder="Email" required>
+    <input type="tel" id="phoneInput" placeholder="Phone Number" required>
+    <button type="submit">Book Appointment</button>
+  </form>
+
+  <h2>Appointments:</h2>
+  <table id="appointmentTable">
+    <tr>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Phone Number</th>
+      <th>Edit</th>
+      <th>Delete</th>
+    </tr>
+  </table>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    // Retrieve existing appointments from the API
+    axios.get('https://crudcrud.com/api/b142533eb19d4e2c86995e5369b9b933/appointments')
+      .then(response => {
+        displayAppointments(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching appointments:', error);
+      });
+
+    // Display existing appointments in the table
+    function displayAppointments(appointments) {
+      const table = document.getElementById('appointmentTable');
+
+      appointments.forEach(appointment => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${appointment.name}</td>
+          <td>${appointment.email}</td>
+          <td>${appointment.phone}</td>
+          <td><button class="edit-btn" data-id="${appointment._id}">Edit</button></td>
+          <td><button class="delete-btn" data-id="${appointment._id}">Delete</button></td>
+        `;
+        table.appendChild(row);
+      });
+
+      // Attach event listeners to the edit and delete buttons
+      const editButtons = document.querySelectorAll('.edit-btn');
+      const deleteButtons = document.querySelectorAll('.delete-btn');
+
+      editButtons.forEach(button => {
+        button.addEventListener('click', editAppointment);
+      });
+
+      deleteButtons.forEach(button => {
+        button.addEventListener('click', deleteAppointment);
+      });
+    }
+
+    // Add a new appointment when the form is submitted
+    const form = document.getElementById('appointmentForm');
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const name = document.getElementById('nameInput').value;
+      const email = document.getElementById('emailInput').value;
+      const phone = document.getElementById('phoneInput').value;
+
+      // Create a new appointment object
+      const appointment = {
+        name: name,
+        email: email,
+        phone: phone
+      };
+
+      // Make a POST request to the API
+      axios.post('https://crudcrud.com/api/b142533eb19d4e2c86995e5369b9b933/appointments', appointment)
+        .then(response => {
+          // Clear the form inputs
+          form.reset();
+          // Add the new appointment to the table
+          displayAppointments([response.data]);
+        })
+        .catch(error => {
+          console.error('Error creating appointment:', error);
+        });
+    });
+
+    // Edit an appointment when the edit button is clicked
+    function editAppointment(event) {
+      const appointmentId = event.target.getAttribute('data-id');
+
+      // Find the row containing the appointment data
+      const row = event.target.parentNode.parentNode;
+      const nameCell = row.cells[0];
+      const emailCell = row.cells[1];
+      const phoneCell = row.cells[2];
+
+      // Replace the appointment data with input fields
+      nameCell.innerHTML = `<input type="text" value="${nameCell.innerText}">`;
+      emailCell.innerHTML = `<input type="email" value="${emailCell.innerText}">`;
+      phoneCell.innerHTML = `<input type="tel" value="${phoneCell.innerText}">`;
+
+      // Change the edit button to a save button
+      const editButton = row.cells[3].querySelector('.edit-btn');
+      editButton.innerText = 'Save';
+      editButton.removeEventListener('click', editAppointment);
+      editButton.addEventListener('click', saveAppointment.bind(null, appointmentId));
+    }
+
+    // Save the edited appointment when the save button is clicked
+    function saveAppointment(appointmentId, event) {
+      const row = event.target.parentNode.parentNode;
+      const name = row.cells[0].querySelector('input').value;
+      const email = row.cells[1].querySelector('input').value;
+      const phone = row.cells[2].querySelector('input').value;
+
+      const appointment = {
+        name: name,
+        email: email,
+        phone: phone
+      };
+
+      // Make a PUT request to update the appointment
+      axios.put(`https://crudcrud.com/api/b142533eb19d4e2c86995e5369b9b933/appointments/${appointmentId}`, appointment)
+        .then(response => {
+          // Restore the appointment data in the table
+          row.cells[0].innerHTML = response.data.name;
+          row.cells[1].innerHTML = response.data.email;
+          row.cells[2].innerHTML = response.data.phone;
+
+          // Change the save button back to an edit button
+          const editButton = row.cells[3].querySelector('.edit-btn');
+          editButton.innerText = 'Edit';
+          editButton.removeEventListener('click', saveAppointment);
+          editButton.addEventListener('click', editAppointment);
+        })
+        .catch(error => {
+          console.error('Error saving appointment:', error);
+        });
+    }
+
+    // Delete an appointment when the delete button is clicked
+    function deleteAppointment(event) {
+      const appointmentId = event.target.getAttribute('data-id');
+
+      // Find the row containing the appointment data
+      const row = event.target.parentNode.parentNode;
+
+      // Make a DELETE request to remove the appointment
+      axios.delete(`https://crudcrud.com/api/b142533eb19d4e2c86995e5369b9b933/appointments/${appointmentId}`)
+        .then(() => {
+          // Remove the row from the table
+          row.remove();
+        })
+        .catch(error => {
+          console.error('Error deleting appointment:', error);
+        });
+    }
+  </script>
+</body>
+</html>
