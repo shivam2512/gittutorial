@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Seller Portal</title>
+</head>
+<body>
+  <h1>Seller Portal</h1>
+  
+  <h2>Add Product</h2>
+  <label for="productName">Product Name:</label>
+  <input type="text" id="productName" required>
+  
+  <label for="sellingPrice">Selling Price:</label>
+  <input type="number" id="sellingPrice" required>
+  
+  <label for="category">Category:</label>
+  <select id="category">
+    <option value="food">Food</option>
+    <option value="electronics">Electronics</option>
+    <option value="skincare">Skincare</option>
+  </select>
+  
+  <button id="addButton">Add</button>
+  
+  <h2>Products</h2>
+  <div id="products">
+    <h3>Food</h3>
+    <ul id="foodList"></ul>
+    
+    <h3>Electronics</h3>
+    <ul id="electronicsList"></ul>
+    
+    <h3>Skincare</h3>
+    <ul id="skincareList"></ul>
+  </div>
+  
+  <script>
+    // CRUD API endpoint
+    const API_URL = 'https://crudcrud.com/api/dd6607fcb9dc4150b57897acaba79c3d/products';
+    
+    // Fetch products from the API and display them
+    async function fetchProducts() {
+      try {
+        const response = await fetch(API_URL);
+        const products = await response.json();
+        
+        // Clear previous product lists
+        const foodList = document.getElementById('foodList');
+        const electronicsList = document.getElementById('electronicsList');
+        const skincareList = document.getElementById('skincareList');
+        foodList.innerHTML = '';
+        electronicsList.innerHTML = '';
+        skincareList.innerHTML = '';
+        
+        // Display products in their respective categories
+        products.forEach(product => {
+          const listItem = document.createElement('li');
+          const deleteButton = document.createElement('button');
+          deleteButton.textContent = 'Delete';
+          
+          deleteButton.addEventListener('click', async () => {
+            await deleteProduct(product._id);
+            await fetchProducts();
+          });
+          
+          listItem.textContent = `${product.name} - ₹${product.price}`;
+          listItem.appendChild(deleteButton);
+          
+          if (product.category === 'food') {
+            foodList.appendChild(listItem);
+          } else if (product.category === 'electronics') {
+            electronicsList.appendChild(listItem);
+          } else if (product.category === 'skincare') {
+            skincareList.appendChild(listItem);
+          }
+        });
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    }
+    
+    // Add a new product
+    async function addProduct() {
+      const productName = document.getElementById('productName').value;
+      const sellingPrice = document.getElementById('sellingPrice').value;
+      const category = document.getElementById('category').value;
+      
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            name: productName,
+            price: sellingPrice,
+            category: category
+          })
+        });
+        
+        if (response.ok) {
+          await fetchProducts();
+        } else {
+          console.error('Failed to add product:', response.status);
+        }
+      } catch (error) {
+        console.error('Error adding product:', error);
+      }
+    }
+    
+    // Delete a product
+    async function deleteProduct(productId) {
+      try {
+        const response = await fetch(`${API_URL}/${productId}`, {
+          method: 'DELETE'
+        });
+        
+        if (!response.ok) {
+          console.error('Failed to delete product:', response.status);
+        }
+      } catch (error) {
+        console.error('Error deleting product:', error);
+      }
+    }
+    
+    // Add event listener to the Add button
+    const addButton = document.getElementById('addButton');
+    addButton.addEventListener('click', addProduct);
+    
+    // Initial fetch of products
+    fetchProducts();
+  </script>
+</body>
+</html>
